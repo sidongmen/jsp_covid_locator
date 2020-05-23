@@ -16,12 +16,6 @@ if (pageName.equals("maps.jsp"))
 		{
 	 title="(이동 경로 : " +location +")";
 		}
-else if (pageName.equals("infected_page.jsp")){
-	title="(확진자 정보 : " +location +")";
-}
-else if (pageName.equals("community.jsp")){
-	title="(커뮤니티)";
-}
 %>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
@@ -67,38 +61,15 @@ else if (pageName.equals("community.jsp")){
 				}
 			 %>
 		</div>
-		
-           <%-- <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" style="display:inline;" href="maps_control.jsp?location=서울">서울</a>
-               <% if (location.equals("서울")){%>
-               <span style="color:#7bc143"><i class="fas fa-check"></i></span>
-               <%}%>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" style="display:inline;" href="maps_control.jsp?location=울산">울산</a>
-            <% if (location.equals("울산")){%>
-               <span style="color:#7bc143"><i class="fas fa-check"></i></span>
-               <%}%>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" style="display:inline;" href="maps_control.jsp?location=부산">부산</a>
-               <% if (location.equals("부산")){%>
-               <span style="color:#7bc143"><i class="fas fa-check"></i></span>
-               <%}%>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" style="display:inline;" href="maps_control.jsp?location=대구">대구</a>
-               <% if (location.equals("대구")){%>
-               <span style="color:#7bc143"><i class="fas fa-check"></i></span>
-               <%}%>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" style="display:inline;" href="maps_control.jsp?location=제주">제주</a>
-            <% if (location.equals("제주")){%>
-               <span style="color:#7bc143"><i class="fas fa-check"></i></span>
-               <%}%>
-           </div> --%>
         </li>
         <li class="nav-item">
            <a class="nav-link mr-2" href="maps_control.jsp?action=info&location=<%=location%>">About</a>
           </li>
      </ul>
+     <%if(session.getAttribute("id")==null){ %>
       <a class="btn btn-primary" href="login.jsp">로그인</a>
+      <%}else{ %>
+      <a class="btn btn-danger" href="maps_control.jsp?action=logout">로그아웃</a>
+      <%} %>
   </div>
 </nav>

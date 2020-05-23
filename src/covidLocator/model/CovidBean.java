@@ -37,14 +37,19 @@ public class CovidBean {
 	}
 	
 	
-	public CovidUser getUser() {
+	public boolean getUser(String email, String password) {
 		connect();
-		String sql = "select * from users where id = 1";
+		String sql = "select * from users where email = ? and password = ?";
 		CovidUser coviduser = new CovidUser();
+		boolean chk = false;
 		try {
 			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,email);
+			pstmt.setString(2,password);
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
+			if(rs.getRow()==1)
+				chk = true;
 			coviduser.setUser_id(rs.getInt("id"));
 			coviduser.setUser_nickname(rs.getString("nickname"));
 			coviduser.setUser_email(rs.getString("email"));
@@ -57,7 +62,7 @@ public class CovidBean {
 		finally {
 			disconnect();
 		}
-		return coviduser;
+		return chk;
 	}
 	
 	public ArrayList<CovidArea> getArea(){
@@ -85,5 +90,69 @@ public class CovidBean {
 			disconnect();
 		}
 		return areas;	
+	}
+	
+	public ArrayList<CovidPatient> getPatient(String area){
+		connect();
+		String sql = "SELECT * FROM patients p, areas a WHERE p.area = a.id AND a.name = ?";
+		ArrayList<CovidPatient> patients = new ArrayList<CovidPatient>();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,area);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				CovidPatient covidPatient = new CovidPatient();
+				covidPatient.setPatient_id(rs.getInt("id"));
+				covidPatient.setPatient_cntname(rs.getString("cntname"));
+				covidPatient.setPatient_cntcode(rs.getString("cntcode"));
+				covidPatient.setPatient_area(rs.getInt("area"));
+				covidPatient.setPatient_sex(rs.getInt("sex"));
+				covidPatient.setPatient_age(rs.getInt("age"));
+				covidPatient.setPatient_home(rs.getString("home"));
+				covidPatient.setPatient_job(rs.getString("job"));
+				covidPatient.setPatient_route(rs.getString("route"));
+				covidPatient.setPatient_first(rs.getString("first"));
+				covidPatient.setPatient_end(rs.getString("end"));
+				covidPatient.setPatient_hospi(rs.getString("hospi"));
+			    patients.add(covidPatient);
+			}
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			disconnect();
+		}
+		return patients;	
+	}
+	
+	public ArrayList<CovidAlert> getAlert(String area){
+		connect();
+		String sql = "SELECT * FROM alerts t, areas a WHERE t.area = a.id AND a.name = ?";
+		ArrayList<CovidAlert> alerts = new ArrayList<CovidAlert>();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,area);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				CovidAlert covidAlert = new CovidAlert();
+				covidAlert.setAlert_id(rs.getInt("id"));
+				covidAlert.setAlert_title(rs.getString("title"));
+				covidAlert.setAlert_chk(rs.getString("chk"));
+				covidAlert.setAlert_date(rs.getString("date"));
+			    alerts.add(covidAlert);
+			}
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			disconnect();
+		}
+		return alerts;	
 	}
 }

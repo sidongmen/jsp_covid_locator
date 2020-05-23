@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
+   import="covidLocator.model.*, java.util.*" 
     pageEncoding="UTF-8"%>
     
   <%
@@ -11,13 +12,16 @@
 <head>
 <meta charset="UTF-8">
 
-<title>Insert title here</title>
+<title>커뮤니티</title>
 </head>
 <body>
         <jsp:include page="menubar.jsp">
           <jsp:param name="select" value="<%=value%>"/>
         </jsp:include>
-
+    <div class="container">
+     <div class="m-4">
+          <h1>커뮤니티 in <%=value%></h1>
+          </div>
      <table class="table table-striped">
       <thead>
        <tr>
@@ -55,5 +59,6 @@
     <li class="page-item"><a class="page-link" href="#">이전</a></li>
   </ul>
 </nav>
+     </div>
 </body>
 </html>

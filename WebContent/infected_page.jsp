@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+    import="covidLocator.model.*, java.util.*, java.text.*" pageEncoding="UTF-8"%>
     
     <%
   request.setCharacterEncoding("UTF-8");
    String value = request.getParameter("location");
    
    %>
-   
+ <jsp:useBean id="patients" scope="request" class="java.util.ArrayList" />  
    
 <!DOCTYPE html>
 <html>
@@ -43,6 +43,9 @@
         </jsp:include>
           
         <div class="container">
+          <div class="m-4">
+          <h1> <%=value%> 확진자</h1>
+          </div>
           <table class="table table-hover">
           <thead>
           <tr>
@@ -58,61 +61,57 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-           <td>5</td>
-           <td>대한민국 <img src="https://www.countryflags.io/kr/shiny/16.png"></td>
-           <td>남성</td>
-           <td>만 28세</td>
-           <td>울산 동구</td>
-           <td>교사</td>
-           <td>해외입국자(마닐라)</td>
-           <td>5/21  <div class="idx">D+3</div></td>
-          <td><a href="#">울산대학교병원</a></td>
+        
+        	<%for(CovidPatient  patient : (ArrayList<CovidPatient>) patients) {%>
+			    <tr>
+           <td><%=patient.getPatient_id()%></td>
+           <td><%=patient.getPatient_cntname()%> <img src="https://www.countryflags.io/<%=patient.getPatient_cntcode()%>/shiny/16.png"></td>
+           <td>
+             <% if(patient.getPatient_sex()==0){%>남성<%} else {%>여성<%} %>
+           </td>
+           <td>만 <%=patient.getPatient_age()%>세</td>
+           <td><%=patient.getPatient_home()%></td>
+           <td>
+           <% if(patient.getPatient_job()==null){%>무직<%} else {%><%=patient.getPatient_job()%><%} %>
+           <td><%=patient.getPatient_route()%></td>
+           <%
+           Date now = new Date();
+           SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.KOREA);
+           SimpleDateFormat fm = new SimpleDateFormat("MM/dd");
+           Date dday = sf.parse(patient.getPatient_first());
+           long diff = now.getTime()-dday.getTime();
+           int daysbetween = (int)(diff / (1000*60*60*24));
+           String days = fm.format(dday);
+           String hospi = patient.getPatient_hospi();
+           String[] hos = hospi.split("@");
+           if (patient.getPatient_end()==null){
+           %> 
+             <td>
+           <%=days%>
+           <div class="idx">D+<%=daysbetween %></div>
+           </td>
+           
+           <td>
+          <a href="https://<%=hos[1]%>"><%=hos[0]%></a>
+          
+          </td>
+          
+           <% }else{%>
+           <td>
+           <%=days%>
+            <div class="ido">퇴원</div>
+            </td>
+            <td>
+          <a><%=fm.format(sf.parse(patient.getPatient_end()))%></a>
+          
+          </td>
+           <%}%>
           </tr>
-            <tr>
-           <td>4</td>
-           <td>일본 <img src="https://www.countryflags.io/jp/shiny/16.png"></td>
-           <td>남성</td>
-           <td>만 54세</td>
-           <td>울주군</td>
-           <td>무직</td>
-           <td>해외입국자(미국)</td>
-           <td>5/18 <div class="idx">D+7</div></td>
-         <td><a href="#">울산대학교병원</a></td>
-          </tr>
-           <tr>
-           <td>3</td>
-           <td>대한민국 <img src="https://www.countryflags.io/kr/shiny/16.png"></td>
-           <td>남성</td>
-           <td>만 54세</td>
-           <td>울주군</td>
-           <td>무직</td>
-           <td>해외입국자(미국)</td>
-           <td>5/18 <div class="ido">퇴원</div></td>
-           <td>05/25</td>
-          </tr>
-          <tr>
-           <td>2</td>
-            <td>미국 <img src="https://www.countryflags.io/us/shiny/16.png"></td>
-           <td>남성</td>
-           <td>만 54세</td>
-           <td>울주군</td>
-           <td>무직</td>
-           <td>해외입국자(미국)</td>
-           <td>5/18 <div class="ido">퇴원</div></td>
-           <td>05/26</td>
-          </tr>
-           <tr>
-           <td>1</td>
-           <td>대한민국 <img src="https://www.countryflags.io/kr/shiny/16.png"></td>
-           <td>남성</td>
-           <td>만 54세</td>
-           <td>울주군</td>
-           <td>무직</td>
-           <td>해외입국자(미국)</td>
-           <td>5/18 <div class="ido">퇴원</div></td>
-           <td>05/31</td>
-          </tr>
+			   
+			 <%
+				}
+			 %>
+			 
         </tbody>
           </table>
         </div>

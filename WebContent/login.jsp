@@ -48,14 +48,14 @@
 <body>
 
 <div class="login-form">
-   <a class="btn btn-primary m-3" href="maps_control.jsp?location=서울">뒤로가기</a>
-    <form action="/examples/actions/confirmation.php" method="post">
+   <a class="btn btn-primary m-3" href="javascript:history.back();">뒤로가기</a>
+    <form action="maps_control.jsp?action=login" method="post">
         <h2 class="text-center">로그인</h2>       
         <div class="form-group">
-            <input type="text" class="form-control" placeholder="아이디" required="required">
+            <input type="text" name="email"class="form-control" placeholder="이메일" required="required">
         </div>
         <div class="form-group">
-            <input type="password" class="form-control" placeholder="비밀번호" required="required">
+            <input type="password" name="password" class="form-control" placeholder="비밀번호" required="required">
         </div>
         <div class="form-group">
             <button type="submit" class="btn btn-primary btn-block">확인</button>

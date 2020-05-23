@@ -20,7 +20,7 @@
 </head>
 <jsp:useBean id="areas" scope="request" class="java.util.ArrayList" />
 <body>
-        <jsp:include page="menubar.jsp">
+       <jsp:include page="menubar.jsp">
           <jsp:param name="select" value="<%=location%>"/>
         </jsp:include>
       <div id="map" style="width:100%;height:90%;"></div>
