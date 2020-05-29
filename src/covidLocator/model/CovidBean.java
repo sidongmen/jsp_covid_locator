@@ -2,6 +2,7 @@ package covidLocator.model;
 
 import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 public class CovidBean {
 
@@ -37,11 +38,10 @@ public class CovidBean {
 	}
 	
 	
-	public boolean getUser(String email, String password) {
+	public CovidUser getUser(String email, String password) {
 		connect();
 		String sql = "select * from users where email = ? and password = ?";
 		CovidUser coviduser = new CovidUser();
-		boolean chk = false;
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1,email);
@@ -49,7 +49,6 @@ public class CovidBean {
 			ResultSet rs = pstmt.executeQuery();
 			rs.next();
 			if(rs.getRow()==1)
-				chk = true;
 			coviduser.setUser_id(rs.getInt("id"));
 			coviduser.setUser_nickname(rs.getString("nickname"));
 			coviduser.setUser_email(rs.getString("email"));
@@ -62,7 +61,7 @@ public class CovidBean {
 		finally {
 			disconnect();
 		}
-		return chk;
+		return coviduser;
 	}
 	
 	public ArrayList<CovidArea> getArea(){
@@ -130,7 +129,7 @@ public class CovidBean {
 	
 	public ArrayList<CovidAlert> getAlert(String area){
 		connect();
-		String sql = "SELECT * FROM alerts t, areas a WHERE t.area = a.id AND a.name = ?";
+		String sql = "SELECT * FROM alerts t, areas a WHERE t.area = a.id AND a.name = ? order by t.date desc";
 		ArrayList<CovidAlert> alerts = new ArrayList<CovidAlert>();
 		
 		try {
@@ -155,4 +154,155 @@ public class CovidBean {
 		}
 		return alerts;	
 	}
+	
+	public ArrayList<CovidPost> getPost(String area){
+		connect();
+		String sql = "SELECT p.id,p.title,p.content,u.nickname,p.view,p.date FROM posts p, areas a, users u WHERE p.area = a.id and p.user=u.id and a.name=? order by p.date DESC";
+		ArrayList<CovidPost> posts = new ArrayList<CovidPost>();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,area);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				CovidPost covidPost = new CovidPost();
+				covidPost.setPost_id(rs.getInt("id"));
+				covidPost.setPost_title(rs.getString("title"));
+				covidPost.setPost_content(rs.getString("content"));
+				covidPost.setPost_nickname(rs.getString("nickname"));
+				covidPost.setPost_view(rs.getInt("view"));
+				covidPost.setPost_date(rs.getString("date"));
+			    posts.add(covidPost);
+			}
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			disconnect();
+		}
+		return posts;	
+	}
+	
+	public CovidPost getPostDetail(int id){
+		connect();
+		String sql = "SELECT p.id,p.title,p.content,u.nickname,p.view,p.date FROM posts p, areas a, users u WHERE p.area = a.id and p.user=u.id and p.id=?";
+		CovidPost covidPost = new CovidPost();
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1,id);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+				covidPost.setPost_id(rs.getInt("id"));
+				covidPost.setPost_title(rs.getString("title"));
+				covidPost.setPost_content(rs.getString("content"));
+				covidPost.setPost_nickname(rs.getString("nickname"));
+				covidPost.setPost_view(rs.getInt("view"));
+				covidPost.setPost_date(rs.getString("date"));
+	
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			disconnect();
+		}
+		return covidPost;	
+	}
+	
+	// 신규 포스트 추가 메서드
+	public boolean insertPost(CovidPost covidPost, String location) {
+		connect();
+				
+		String sql ="insert into posts(user,area,title,content,view,date) values(?,(select id from areas where name =?),?,?,?,Now())";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1,covidPost.getPost_user());
+			pstmt.setString(2, location);
+			pstmt.setString(3,covidPost.getPost_title());
+			pstmt.setString(4,covidPost.getPost_content());
+			pstmt.setInt(5,1);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			disconnect();
+		}
+		return true;
+	}
+    public boolean insertView(int postId) {
+    	connect();
+    	
+    	String sql = "update posts set view = view + 1 where id = ?";
+    	try {
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.setInt(1, postId);
+    		pstmt.executeUpdate();
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    public boolean delPost(int postId) {
+    	connect();
+    	
+    	String sql = "delete from posts where id = ?";
+    	try {
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.setInt(1, postId);
+    		pstmt.executeUpdate();
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+	// 신규 지역 알림 추가 메소
+	public boolean insertAlert(CovidAlert covidAlert, String location) {
+		connect();
+				
+		String sql ="insert into alerts(area,title,chk,date) values((select id from areas where name =?),?,?,Now())";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, location);
+			pstmt.setString(2,covidAlert.getAlert_title());
+			pstmt.setString(3,covidAlert.getAlert_chk());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			disconnect();
+		}
+		return true;
+	}
+	
+    public boolean delAlert(int alertId) {
+    	connect();
+    	
+    	String sql = "delete from alerts where id = ?";
+    	try {
+    		pstmt = conn.prepareStatement(sql);
+    		pstmt.setInt(1, alertId);
+    		pstmt.executeUpdate();
+    	} catch(SQLException e) {
+    		e.printStackTrace();
+    		return false;
+    	}
+    	
+    	return true;
+    }
 }

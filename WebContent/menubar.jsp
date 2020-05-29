@@ -66,7 +66,7 @@ if (pageName.equals("maps.jsp"))
            <a class="nav-link mr-2" href="maps_control.jsp?action=info&location=<%=location%>">About</a>
           </li>
      </ul>
-     <%if(session.getAttribute("id")==null){ %>
+     <%if(session.getAttribute("me")==null){ %>
       <a class="btn btn-primary" href="login.jsp">로그인</a>
       <%}else{ %>
       <a class="btn btn-danger" href="maps_control.jsp?action=logout">로그아웃</a>

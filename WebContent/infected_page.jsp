@@ -43,8 +43,16 @@
         </jsp:include>
           
         <div class="container">
-          <div class="m-4">
-          <h1> <%=value%> 확진자</h1>
+          <div class="d-flex justify-content-between align-items-center m-4">
+          <h1> <%=value%> 확진자 </h1>
+          <%
+          if(session.getAttribute("me") != null) {
+        	  CovidUser me = (CovidUser)session.getAttribute("me");
+        	  if (me.getUser_role() == 1){
+    	    %>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#Modal" data-whatever="@mdo">확진자 추가</button>
+          <% }
+        	  }%>
           </div>
           <table class="table table-hover">
           <thead>
@@ -115,7 +123,40 @@
         </tbody>
           </table>
         </div>
-        
+    <!-- Modal -->
+
+    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel"><%=value%>지역 확진자 추가</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form method="post" action="maps_control.jsp?action=submit_a&location=<%=value%>">
+      <div class="modal-body">
+          <div class="form-group">
+    <label for="exampleFormControlSelect1">분류</label>
+    <select class="form-control" name="select">
+      <option>new</option>
+      <option>긴급</option>
+      <option>주의</option>
+    </select>
+  </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">메세지:</label>
+            <textarea class="form-control" name="message"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        <button type="submit" class="btn btn-primary">추가 완료</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div> 
         
 </body>
 </html>

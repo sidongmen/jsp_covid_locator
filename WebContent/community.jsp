@@ -1,12 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-   import="covidLocator.model.*, java.util.*" 
+   import="covidLocator.model.*, java.util.*, java.text.*" 
     pageEncoding="UTF-8"%>
     
   <%
   request.setCharacterEncoding("UTF-8");
    String value = request.getParameter("location");
    %>
-   
+  <jsp:useBean id="posts" scope="request" class="java.util.ArrayList" /> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,23 +33,31 @@
        </tr>
       </thead>
       <tbody>
-        <tr>
-           <td>2</td>
-           <td><a href="postview_page.jsp?location=<%=value%>">가나다라마바사</a></td>
-           <td>홍길동</td>
-           <td>2020.05.21</td>
-           <td>1</td>
-        </tr>
-       <tr>
-           <td>1</td>
-           <td><a href="postview_page.jsp?location=<%=value%>">동해물과 백두산이 마르고</a></td>
-           <td>홍길동</td>
-           <td>2020.05.21</td>
-           <td>1</td>
-        </tr>
+      
+      	<%
+				for(CovidPost post : (ArrayList<CovidPost>) posts) {
+					SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",Locale.KOREA);
+			        SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd");
+			        Date dday = sf.parse(post.getPost_date());
+			        String days = fm.format(dday);
+				%>
+			 <tr>
+           <td><%=post.getPost_id()%></td>
+           <td><a href="maps_control.jsp?action=postview&location=<%=value%>&id=<%=post.getPost_id()%>"><%=post.getPost_title()%></a></td>
+           <td><%=post.getPost_nickname()%></td>
+           <td><%=days%></td>
+           <td><%=post.getPost_view()%></td>
+                 </tr>
+				
+			    <%}%>
       </tbody>
      </table>
- <a class="btn btn-light float-right mr-3">글쓰기</a>
+     <%
+     if(session.getAttribute("me")!= null) {
+    	 %>
+ <a class="btn btn-light float-right mr-3"href="maps_control.jsp?action=postwrite&location=<%=value%>">글쓰기</a>
+   <%}%>
+    
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
     <li class="page-item"><a class="page-link" href="#">다음</a></li>
