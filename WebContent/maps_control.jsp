@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-   import="covidLocator.model.*, java.util.*" pageEncoding="UTF-8"%>
+   import="covidLocator.model.*, java.util.*, java.net.URLEncoder" pageEncoding="UTF-8"%>
 <%@ page errorPage="error.jsp" %>
 <% request.setCharacterEncoding("utf-8"); %>
 
@@ -23,9 +23,18 @@ pageContext.forward("maps.jsp?location="+location+"&x="+x+"&y="+y);
 else if(action.equals("community"))
 {
   String location = request.getParameter("location"); 
-  ArrayList<CovidPost> posts = db.getPost(location);
+  ArrayList<CovidPost> posts;
+  if(request.getParameter("page") != null){
+	  int pageAt = Integer.parseInt(request.getParameter("page"));
+  posts = db.getPost(location,pageAt);
+  }else
+  {
+ posts = db.getPost(location,1);
+  }
+  CovidPaging paging = db.pagination(location);
   request.setAttribute("areas",areas);
   request.setAttribute("posts",posts);
+  request.setAttribute("page",paging);
   pageContext.forward("community.jsp?location="+location);
 }
 else if(action.equals("infected")) //지역별 확진자 이동경로
@@ -92,15 +101,9 @@ else if(action.equals("submit_p")){
 		covidPost.setPost_content(content);
 		if(db.insertPost(covidPost,location))
 		{
-			  ArrayList<CovidPost> posts = db.getPost(location);
-			  request.setAttribute("areas",areas);
-			  request.setAttribute("posts",posts);
-			  pageContext.forward("community.jsp?location="+location);
+			response.sendRedirect("maps_control.jsp?action=community&location="+ URLEncoder.encode(location,"UTF-8"));
 		}else{
-			  ArrayList<CovidPost> posts = db.getPost(location);
-			  request.setAttribute("areas",areas);
-			  request.setAttribute("posts",posts);
-			  pageContext.forward("community.jsp?location="+location);
+			response.sendRedirect("maps_control.jsp?action=community&location="+ URLEncoder.encode(location,"UTF-8"));
 		}
 	}
 	
@@ -109,16 +112,10 @@ else if(action.equals("delete_p")){
 	 String location = request.getParameter("location"); 
 	 String postId = request.getParameter("id");
 	 if(db.delPost(Integer.parseInt(postId))){
-		  ArrayList<CovidPost> posts = db.getPost(location);
-		  request.setAttribute("areas",areas);
-		  request.setAttribute("posts",posts);
-		  pageContext.forward("community.jsp?location="+location);
+		 response.sendRedirect("maps_control.jsp?action=community&location="+ URLEncoder.encode(location,"UTF-8"));
 	 }else
 	 {
-		  ArrayList<CovidPost> posts = db.getPost(location);
-		  request.setAttribute("areas",areas);
-		  request.setAttribute("posts",posts);
-		  pageContext.forward("community.jsp?location="+location);
+		 response.sendRedirect("maps_control.jsp?action=community&location="+ URLEncoder.encode(location,"UTF-8"));
 	 }
 }
 else if(action.equals("submit_a")){
@@ -136,15 +133,9 @@ else if(action.equals("submit_a")){
 		
 			if(db.insertAlert(covidAlert,location))
 			{
-				 ArrayList<CovidAlert> alerts = db.getAlert(location);
-				 request.setAttribute("areas",areas);
-				 request.setAttribute("alerts", alerts);
-				 pageContext.forward("alert.jsp?location="+location);
+				 response.sendRedirect("maps_control.jsp?action=alert&location="+ URLEncoder.encode(location,"UTF-8"));
 			}else{
-				 ArrayList<CovidAlert> alerts = db.getAlert(location);
-				 request.setAttribute("areas",areas);
-				 request.setAttribute("alerts", alerts);
-				 pageContext.forward("alert.jsp?location="+location);
+				 response.sendRedirect("maps_control.jsp?action=alert&location="+ URLEncoder.encode(location,"UTF-8"));
 			}
 		}
 		
@@ -153,18 +144,54 @@ else if(action.equals("delete_a")){
 	 String location = request.getParameter("location"); 
 	 String alertId = request.getParameter("id");
 	 if(db.delAlert(Integer.parseInt(alertId))){
-		 ArrayList<CovidAlert> alerts = db.getAlert(location);
-		 request.setAttribute("areas",areas);
-		 request.setAttribute("alerts", alerts);
-		 pageContext.forward("alert.jsp?location="+location);
+		 response.sendRedirect("maps_control.jsp?action=alert&location="+ URLEncoder.encode(location,"UTF-8"));
 	 }else
 	 {
-		 ArrayList<CovidAlert> alerts = db.getAlert(location);
-		 request.setAttribute("areas",areas);
-		 request.setAttribute("alerts", alerts);
-		 pageContext.forward("alert.jsp?location="+location);
+		 response.sendRedirect("maps_control.jsp?action=alert&location="+ URLEncoder.encode(location,"UTF-8"));
+		
 	 }
 }
+
+else if(action.equals("submit_i")){
+	 String location = request.getParameter("location"); 
+		String contry = request.getParameter("selectContry");
+		String sex = request.getParameter("selectSex");
+		String age = request.getParameter("age");
+		String address = request.getParameter("address");
+		String job = request.getParameter("job");
+		String month = request.getParameter("month");
+		String day = request.getParameter("day");
+		String source = request.getParameter("source");
+		String where = request.getParameter("where");
+		String whereLink = request.getParameter("whereLink");
+
+		Object chk_user = session.getAttribute("me");
+		if(chk_user ==null)
+			out.println("message : login plz");
+		else{
+			String[] cnt = contry.split("/");
+			CovidPatient patient = new CovidPatient();
+			patient.setPatient_cntname(cnt[0]);
+			patient.setPatient_cntcode(cnt[1]);
+			patient.setPatient_sex(Integer.parseInt(sex));
+			patient.setPatient_age(Integer.parseInt(age));
+			patient.setPatient_home(address);
+			patient.setPatient_job(job);
+			patient.setPatient_route(source);
+			patient.setPatient_first("2020-"+month+"-"+day);
+			patient.setPatient_hospi(where+'@'+whereLink);
+		
+			if(db.insertPatient(patient,location))
+			{
+				response.sendRedirect("maps_control.jsp?action=infected&location="+ URLEncoder.encode(location,"UTF-8"));
+			
+			}else{
+				response.sendRedirect("maps_control.jsp?action=infected&location="+ URLEncoder.encode(location,"UTF-8"));
+			}
+		}
+		
+}
+
 else if(action.equals("logout")){
 	session.invalidate();
 	response.sendRedirect("index.jsp");

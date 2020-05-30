@@ -35,6 +35,16 @@
   font-size: small;
   color: white;
  }
+   .idt{
+  display:inline;
+  border-style:solid;
+  border-color:#f56e6e;
+  background-color:#f56e6e;
+  padding: 2px;
+  border-radius: 30px;
+  font-size: small;
+  color: white;
+ }
 </style>
 </head>
 <body>
@@ -93,18 +103,30 @@
            String hospi = patient.getPatient_hospi();
            String[] hos = hospi.split("@");
            if (patient.getPatient_end()==null){
+        	   if(daysbetween == 0) {
            %> 
+             <td>
+           <%=days%>
+           <div class="idt">오늘</div>
+           </td>
+           
+           <% } else {%>
              <td>
            <%=days%>
            <div class="idx">D+<%=daysbetween %></div>
            </td>
-           
-           <td>
+    
+           <% 
+           }
+        	   %>
+        	   <td>
           <a href="https://<%=hos[1]%>"><%=hos[0]%></a>
           
           </td>
-          
-           <% }else{%>
+        	   <%
+           }
+           
+           else{%>
            <td>
            <%=days%>
             <div class="ido">퇴원</div>
@@ -125,7 +147,7 @@
         </div>
     <!-- Modal -->
 
-    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -134,20 +156,71 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form method="post" action="maps_control.jsp?action=submit_a&location=<%=value%>">
+      <form method="post" action="maps_control.jsp?action=submit_i&location=<%=value%>">
       <div class="modal-body">
           <div class="form-group">
-    <label for="exampleFormControlSelect1">분류</label>
-    <select class="form-control" name="select">
-      <option>new</option>
-      <option>긴급</option>
-      <option>주의</option>
+    <label>국적</label>
+    <select class="form-control" name="selectContry">
+      <option>대한민국/kr</option>
+      <option>일본/jp</option>
+      <option>미국/us</option>
     </select>
   </div>
+            <div class="form-group">
+    <label for="exampleFormControlSelect1">성별</label>
+    <select class="form-control" name="selectSex">
+      <option value="0">남성</option>
+      <option value="1">여성</option>
+     </select>
+      </div>
+      <div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text">만</span>
+  </div>
+  <input type="text" name="age" class="form-control" aria-label="age">
+  <div class="input-group-append">
+    <span class="input-group-text">나이</span>
+  </div>
+   </div>
+   
+   <div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">거주지</span>
+  </div>
+  <input type="text" name="address" class="form-control" placeholder="거주지 정보를 입력해주세요." aria-label="address" aria-describedby="basic-addon1">
+</div>
+
+   <div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">직업</span>
+  </div>
+  <input type="text" name="job" class="form-control" placeholder="직업을 입력해주세요." aria-label="job" aria-describedby="basic-addon1">
+</div>
+<div class="input-group">
+  <div class="input-group-prepend">
+    <span class="input-group-text">확진 판정 월/일</span>
+  </div>
+  <input type="text" name="month" placeholder="월" aria-label="month" class="form-control">
+  <input type="text" name="day" placeholder="일" aria-label="day" class="form-control">
+</div>
           <div class="form-group">
-            <label for="message-text" class="col-form-label">메세지:</label>
-            <textarea class="form-control" name="message"></textarea>
+            <label class="col-form-label">추정 감염경로:</label>
+            <textarea class="form-control" name="source"></textarea>
           </div>
+          
+             <div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">격리시설</span>
+  </div>
+  <input type="text" name="where" class="form-control" placeholder="대학병원, 보건소 및 자택 등" aria-label="where" aria-describedby="basic-addon1">
+</div>
+
+   <div class="input-group mb-3">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="basic-addon1">격리시설 링크</span>
+  </div>
+  <input type="text" name="whereLink" class="form-control" placeholder="www.hospital.com" aria-label="whereLink" aria-describedby="basic-addon1">
+</div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>

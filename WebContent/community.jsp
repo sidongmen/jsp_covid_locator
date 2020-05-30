@@ -5,6 +5,22 @@
   <%
   request.setCharacterEncoding("UTF-8");
    String value = request.getParameter("location");
+   String pageAt = request.getParameter("page");
+   CovidPaging paging = (CovidPaging)request.getAttribute("page");
+   int now = pageAt != null ? Integer.parseInt(pageAt) : 1;
+   int prev=1;
+   int next=1;
+   if (now == paging.getPaging_firstPage()){
+	   prev=1;
+   }else{
+	   prev = now -1;
+   }
+   
+   if (now == paging.getPaging_lastPage()){
+	   next = paging.getPaging_lastPage();
+   }else{
+	   next = now +1;
+   }
    %>
   <jsp:useBean id="posts" scope="request" class="java.util.ArrayList" /> 
 <!DOCTYPE html>
@@ -25,11 +41,11 @@
      <table class="table table-striped">
       <thead>
        <tr>
-          <th>번호</th>
-          <th>제목</th>
-          <th>작성자</th>
-          <th>날짜</th>
-          <th>조회수</th>
+          <th style="width: 15%; text-align:center;">번호</th>
+          <th style="width: 50%; text-align:center;">제목</th>
+          <th style="width: 10%; text-align:center;">작성자</th>
+          <th style="width: 15%; text-align:center;">날짜</th>
+          <th style="width: 10%; text-align:center;">조회수</th>
        </tr>
       </thead>
       <tbody>
@@ -42,11 +58,11 @@
 			        String days = fm.format(dday);
 				%>
 			 <tr>
-           <td><%=post.getPost_id()%></td>
+           <td style="text-align:center;"><%=post.getPost_id()%></td>
            <td><a href="maps_control.jsp?action=postview&location=<%=value%>&id=<%=post.getPost_id()%>"><%=post.getPost_title()%></a></td>
-           <td><%=post.getPost_nickname()%></td>
-           <td><%=days%></td>
-           <td><%=post.getPost_view()%></td>
+           <td style="text-align:center;"><%=post.getPost_nickname()%></td>
+           <td style="text-align:center;"><%=days%></td>
+           <td style="text-align:center;"><%=post.getPost_view()%></td>
                  </tr>
 				
 			    <%}%>
@@ -60,11 +76,17 @@
     
 <nav aria-label="Page navigation example">
   <ul class="pagination justify-content-center">
-    <li class="page-item"><a class="page-link" href="#">다음</a></li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">이전</a></li>
+    <li class="page-item"><a class="page-link" href="maps_control.jsp?action=community&location=<%=value%>&page=<%=prev%>">이전</a></li>
+    <%
+     for (int i=1; i<=paging.getPaging_lastPage();i++) {
+    	 if (now == i) {
+    %>
+     <li class="page-item active"><a class="page-link" href="maps_control.jsp?action=community&location=<%=value%>&page=<%=i%>"><%=i%></a></li>
+    <% }else{%>
+    <li class="page-item"><a class="page-link" href="maps_control.jsp?action=community&location=<%=value%>&page=<%=i%>"><%=i%></a></li>
+    <%}
+    	 } %>
+    <li class="page-item"><a class="page-link" href="maps_control.jsp?action=community&location=<%=value%>&page=<%=next%>">다음</a></li>
   </ul>
 </nav>
      </div>

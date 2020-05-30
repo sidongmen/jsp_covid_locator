@@ -93,7 +93,7 @@ public class CovidBean {
 	
 	public ArrayList<CovidPatient> getPatient(String area){
 		connect();
-		String sql = "SELECT * FROM patients p, areas a WHERE p.area = a.id AND a.name = ?";
+		String sql = "SELECT * FROM patients p, areas a WHERE p.area = a.id AND a.name = ? order by p.first DESC";
 		ArrayList<CovidPatient> patients = new ArrayList<CovidPatient>();
 		
 		try {
@@ -155,14 +155,16 @@ public class CovidBean {
 		return alerts;	
 	}
 	
-	public ArrayList<CovidPost> getPost(String area){
+	public ArrayList<CovidPost> getPost(String area,int page){
 		connect();
-		String sql = "SELECT p.id,p.title,p.content,u.nickname,p.view,p.date FROM posts p, areas a, users u WHERE p.area = a.id and p.user=u.id and a.name=? order by p.date DESC";
+		String sql = "SELECT p.id,p.title,p.content,u.nickname,p.view,p.date FROM posts p, areas a, users u WHERE p.area = a.id and p.user=u.id and a.name=? order by p.date DESC limit ?,?";
 		ArrayList<CovidPost> posts = new ArrayList<CovidPost>();
 		
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1,area);
+			pstmt.setInt(2,10*(page-1));
+			pstmt.setInt(3,10);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				CovidPost covidPost = new CovidPost();
@@ -268,7 +270,7 @@ public class CovidBean {
     	return true;
     }
     
-	// 신규 지역 알림 추가 메소
+	// 신규 지역 알림 추가 메소드
 	public boolean insertAlert(CovidAlert covidAlert, String location) {
 		connect();
 				
@@ -305,4 +307,70 @@ public class CovidBean {
     	
     	return true;
     }
+    
+	// 신규 지역 알림 추가 메소드
+	public boolean insertPatient(CovidPatient patient, String location) {
+		connect();
+				
+		String sql ="insert into patients(cntname,cntcode,area,sex,age,home,job,route,first,hospi) values(?,?,(select id from areas where name =?),?,?,?,?,?,?,?)";
+		
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, patient.getPatient_cntname());
+			pstmt.setString(2, patient.getPatient_cntcode());
+			pstmt.setString(3, location);
+			pstmt.setInt(4,patient.getPatient_sex());
+			pstmt.setInt(5, patient.getPatient_age());
+			pstmt.setString(6,patient.getPatient_home());
+			pstmt.setString(7, patient.getPatient_job());
+			pstmt.setString(8,patient.getPatient_route());
+			pstmt.setString(9,patient.getPatient_first());
+			pstmt.setString(10, patient.getPatient_hospi());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		finally {
+			disconnect();
+		}
+		return true;
+	}
+	
+	public CovidPaging pagination(String location) {
+	   connect();
+	   String sql = "SELECT 1 as firstPage, truncate(COUNT(*) /10,1) as lastPage FROM posts p, areas a, users u WHERE p.area = a.id and p.user=u.id and a.name=?";
+	   CovidPaging covidPaging = new CovidPaging();
+	   try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1,location);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			
+			if (rs.getDouble("firstPage") == rs.getDouble("lastPage"))
+			{
+				covidPaging.setPaging_firstPage(1);
+				covidPaging.setPaging_lastPage(1);
+			}
+			else {
+				covidPaging.setPaging_firstPage(1);
+				int tmp = (int)Math.round(rs.getDouble("lastPage")*10);
+				if((tmp % 10) == 0) {
+					covidPaging.setPaging_lastPage(tmp / 10);
+				}else {
+					covidPaging.setPaging_lastPage((tmp / 10) + 1);
+				}
+				
+			}
+			
+			rs.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally {
+			disconnect();
+		}
+		return covidPaging;	
+	}
 }

@@ -9,18 +9,10 @@
 
 <%
 String location = request.getParameter("location");
-String url = request.getRequestURI();
-String pageName = url.substring(url.lastIndexOf("/")+1);
-String title="";
-if (pageName.equals("maps.jsp"))
-		{
-	 title="(이동 경로 : " +location +")";
-		}
 %>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="javascript:history.back();">
     <i class="fas fa-search-location"></i> 코로나 로케이터 version 1.0.1
-    <%= title %>
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse"
     data-target="#navbarSupportedContent">
@@ -54,7 +46,8 @@ if (pageName.equals("maps.jsp"))
 			    }
 			    %>
 			<a class="dropdown-item" style="display:inline;" href="maps_control.jsp?action=map&location=<%=area.getArea_name()%>&x=<%=area.getArea_x()%>&y=<%=area.getArea_y()%>"><%=area.getArea_name()%></a>
-               <% if (location.equals(area.getArea_name())){%>
+               <% if (location.equals(area.getArea_name())){
+               %>
                <span style="color:#7bc143"><i class="fas fa-check"></i></span>
                <%}%>
 			 <%
