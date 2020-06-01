@@ -50,17 +50,20 @@
 <div class="login-form">
    <a class="btn btn-primary m-3" href="javascript:history.back();">뒤로가기</a>
     <form action="maps_control.jsp?action=login" method="post">
-        <h2 class="text-center">로그인</h2>       
+        <h2 class="text-center">회원가입</h2>       
         <div class="form-group">
             <input type="text" name="email"class="form-control" placeholder="이메일" required="required">
+              <button class="btn btn-light m-1">중복 확인</button>
         </div>
         <div class="form-group">
-            <input type="password" name="password" class="form-control" placeholder="비밀번호" required="required">
+            <input type="password" name="pwd" class="form-control" placeholder="비밀번호" required="required">
+        </div>
+                <div class="form-group">
+            <input type="password" name="pwdChk" class="form-control" placeholder="비밀번호 재확인" required="required">
         </div>
         <div class="form-group">
-            <button type="submit" class="btn btn-primary btn-block">확인</button>
+            <button type="submit" class="btn btn-primary btn-block">가입하기</button>
         </div>
-            <p class="text-center"><a href="signup.jsp">회원가입</a></p>
     </form>
 </div>
 
