@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="httpL//www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+<display-name>JSP_create</display-name>
+<security-constraint>
+    <web-resource-collection>
+      <web-resource-name>admin page</web-resource-name>
+      <url-pattern>/termProject/adminpage.jsp</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+        <decription>admin only</decription>
+        <role-name>webadmin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+  <login-config>
+   <auth-method>BASIC</auth-method>
+   <realm-name>WebAdminRealm</realm-name>
+</login-config>
+
+<resource-ref>
+    <description>connection</description>
+    <res-ref-name>jdbc/mysql</res-ref-name>
+    <res-type>javax.sql.DataSource</res-type>
+    <res-auth>Container</res-auth>
+</resource-ref>
+</web-app>

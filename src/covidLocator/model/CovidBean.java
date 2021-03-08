@@ -15,7 +15,7 @@ public class CovidBean {
 	void connect() {
 	  try {
 		  Class.forName(jdbc_driver);
-		  conn = DriverManager.getConnection(jdbc_url,"root","my123123");
+		  conn = DriverManager.getConnection(jdbc_url,"root","myhouse901");
 	  }catch(Exception e) {
 		  e.printStackTrace();
 	  }
@@ -216,7 +216,7 @@ public class CovidBean {
 		return covidPost;	
 	}
 	
-	// 신규 포스트 추가 메서드
+	// �떊洹� �룷�뒪�듃 異붽� 硫붿꽌�뱶
 	public boolean insertPost(CovidPost covidPost, String location) {
 		connect();
 				
@@ -270,7 +270,7 @@ public class CovidBean {
     	return true;
     }
     
-	// 신규 지역 알림 추가 메소드
+	// �떊洹� 吏��뿭 �븣由� 異붽� 硫붿냼�뱶
 	public boolean insertAlert(CovidAlert covidAlert, String location) {
 		connect();
 				
@@ -308,7 +308,7 @@ public class CovidBean {
     	return true;
     }
     
-	// 신규 지역 알림 추가 메소드
+	// �떊洹� 吏��뿭 �븣由� 異붽� 硫붿냼�뱶
 	public boolean insertPatient(CovidPatient patient, String location) {
 		connect();
 				
